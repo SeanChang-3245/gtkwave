@@ -146,8 +146,7 @@ void gw_wave_view_render_traces(GwWaveView *self, cairo_t *cr)
         GtkAllocation allocation;
         gtk_widget_get_allocation(GLOBALS->wavearea, &allocation);
 
-        num_traces_displayable = allocation.height / (GLOBALS->fontheight);
-        num_traces_displayable--; /* for the time trace that is always there */
+        num_traces_displayable = (allocation.height - WAVE_HEADER_HEIGHT) / (GLOBALS->fontheight); /* minus the time trace */
 
         /* ensure that transaction traces are visible even if the topmost traces are blanks */
         while (tback) {
@@ -285,13 +284,13 @@ static void draw_hptr_trace(GwWaveView *self,
     GLOBALS->tims.start -= GLOBALS->shift_timebase;
     GLOBALS->tims.end -= GLOBALS->shift_timebase;
 
-    liney = ((which + 2) * GLOBALS->fontheight) - 2;
+    liney = WAVE_HEADER_HEIGHT + ((which + 1) * GLOBALS->fontheight) - 2;
     if (((t) && (t->flags & TR_INVERT)) && (!is_event)) {
-        _y0 = ((which + 1) * GLOBALS->fontheight) + 2;
+        _y0 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
         _y1 = liney - 2;
         invert = 1;
     } else {
-        _y1 = ((which + 1) * GLOBALS->fontheight) + 2;
+        _y1 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
         _y0 = liney - 2;
         invert = 0;
     }
@@ -656,8 +655,8 @@ static void draw_hptr_trace_vector_analog(GwWaveView *self,
     GwTimeRange *time_range = gw_dump_file_get_time_range(GLOBALS->dump_file);
     GwTime max_time = gw_time_range_get_end(time_range);
 
-    liney = ((which + 2 + num_extension) * GLOBALS->fontheight) - 2;
-    _y1 = ((which + 1) * GLOBALS->fontheight) + 2;
+    liney = WAVE_HEADER_HEIGHT + ((which + 1 + num_extension) * GLOBALS->fontheight) - 2;
+    _y1 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
     _y0 = liney - 2;
     yu = (_y0 + _y1) / 2;
 
@@ -1081,8 +1080,8 @@ static void draw_hptr_trace_vector(GwWaveView *self,
     GLOBALS->tims.start -= GLOBALS->shift_timebase;
     GLOBALS->tims.end -= GLOBALS->shift_timebase;
 
-    liney = ((which + 2) * GLOBALS->fontheight) - 2;
-    _y1 = ((which + 1) * GLOBALS->fontheight) + 2;
+    liney = WAVE_HEADER_HEIGHT + ((which + 1) * GLOBALS->fontheight) - 2;
+    _y1 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
     _y0 = liney - 2;
     yu = (_y0 + _y1) / 2;
     ytext = yu - (GLOBALS->wavefont->ascent / 2) + GLOBALS->wavefont->ascent;
@@ -1460,8 +1459,8 @@ static void draw_vptr_trace_analog(GwWaveView *self,
     GwTime max_time = gw_time_range_get_end(time_range);
 
     h = v;
-    liney = ((which + 2 + num_extension) * GLOBALS->fontheight) - 2;
-    _y1 = ((which + 1) * GLOBALS->fontheight) + 2;
+    liney = WAVE_HEADER_HEIGHT + ((which + 1 + num_extension) * GLOBALS->fontheight) - 2;
+    _y1 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
     _y0 = liney - 2;
     yu = (_y0 + _y1) / 2;
 
@@ -1858,8 +1857,8 @@ static void draw_vptr_trace(GwWaveView *self,
     GLOBALS->tims.start -= GLOBALS->shift_timebase;
     GLOBALS->tims.end -= GLOBALS->shift_timebase;
 
-    liney = ((which + 2) * GLOBALS->fontheight) - 2;
-    _y1 = ((which + 1) * GLOBALS->fontheight) + 2;
+    liney = WAVE_HEADER_HEIGHT + ((which + 1) * GLOBALS->fontheight) - 2;
+    _y1 = WAVE_HEADER_HEIGHT + (which * GLOBALS->fontheight) + 2;
     _y0 = liney - 2;
     yu = (_y0 + _y1) / 2;
     ytext = yu - (GLOBALS->wavefont->ascent / 2) + GLOBALS->wavefont->ascent;

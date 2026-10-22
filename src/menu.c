@@ -4782,6 +4782,18 @@ void menu_show_grid(gpointer null_data, guint callback_action, GtkWidget *widget
     DEBUG(printf("Show Grid\n"));
 }
 
+void menu_vertical_fill(gpointer null_data, guint callback_action, GtkWidget *widget)
+{
+    (void)null_data;
+    (void)callback_action;
+    (void)widget;
+
+    GLOBALS->vertical_fill =
+        gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_VFILL]));
+    redraw_signals_and_waves();
+    DEBUG(printf("Fill Window Vertically\n"));
+}
+
 /**/
 void menu_show_wave_highlight(gpointer null_data, guint callback_action, GtkWidget *widget)
 {
@@ -5373,6 +5385,11 @@ static gtkwave_mlist_t menu_items[] = {
     WAVE_GTKIFE("/View/Fullscreen", "F11", menu_fullscreen, WV_MENU_FULLSCR, "<ToggleItem>"),
     WAVE_GTKIFE("/View/<separator>", NULL, NULL, WV_MENU_SEP8C, "<Separator>"),
     WAVE_GTKIFE("/View/Show Grid", "<Alt>G", menu_show_grid, WV_MENU_VSG, "<ToggleItem>"),
+    WAVE_GTKIFE("/View/Fill Window Vertically",
+                NULL,
+                menu_vertical_fill,
+                WV_MENU_VFILL,
+                "<ToggleItem>"),
     WAVE_GTKIFE("/View/<separator>", NULL, NULL, WV_MENU_SEP9, "<Separator>"),
     WAVE_GTKIFE("/View/Show Wave Highlight",
                 NULL,
@@ -5554,6 +5571,8 @@ void set_menu_toggles(void)
                                    GLOBALS->fullscreen);
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_VSG]),
                                    GLOBALS->display_grid);
+    gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_VFILL]),
+                                   GLOBALS->vertical_fill);
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_SHW]),
                                    GLOBALS->highlight_wavewindow);
     gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menu_wlist[WV_MENU_FILL1]),

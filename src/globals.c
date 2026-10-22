@@ -650,6 +650,12 @@ static const struct Global globals_base_values = {
     1, /* do_zoom_center 660 */
     0, /* do_initial_zoom_fit 661 */
     0, /* do_initial_zoom_fit_used */
+
+    /*
+     * vertical fill
+     */
+    1, /* base_fontheight */
+    0, /* vertical_fill */
 };
 
 /*
@@ -955,6 +961,8 @@ void reload_into_new_context_2(void)
     new_globals->to_entry = GLOBALS->to_entry;
 
     new_globals->fontheight = GLOBALS->fontheight;
+    new_globals->base_fontheight = GLOBALS->base_fontheight;
+    new_globals->vertical_fill = GLOBALS->vertical_fill;
     new_globals->wavecrosspiece = GLOBALS->wavecrosspiece;
 
     new_globals->signalfont =

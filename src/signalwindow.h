@@ -26,5 +26,6 @@ gint install_keypress_handler(void);
 void remove_keypress_handler(gint id);
 
 void redraw_signals_and_waves(void);
+gboolean update_vertical_fill(void);
 
 #endif

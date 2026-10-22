@@ -113,10 +113,9 @@ GwTime cook_markertime(GwTime marker, gint x, gint y)
     GtkAllocation allocation;
     gtk_widget_get_allocation(GLOBALS->wavearea, &allocation);
 
-    num_traces_displayable = allocation.height / (GLOBALS->fontheight);
-    num_traces_displayable--; /* for the time trace that is always there */
+    num_traces_displayable = (allocation.height - WAVE_HEADER_HEIGHT) / (GLOBALS->fontheight);
 
-    y -= GLOBALS->fontheight;
+    y -= WAVE_HEADER_HEIGHT;
     if (y < 0)
         y = 0;
     y /= GLOBALS->fontheight; /* y now indicates the trace in question */
@@ -629,8 +628,7 @@ int target = value + delta;
 GtkAllocation allocation;
 gtk_widget_get_allocation(GLOBALS->signalarea, &allocation);
 
-int num_traces_displayable=(allocation.height)/(GLOBALS->fontheight);
-num_traces_displayable--;   /* for the time trace that is always there */
+int num_traces_displayable=(allocation.height - WAVE_HEADER_HEIGHT)/(GLOBALS->fontheight); /* minus the time trace */
 
 if(target > GLOBALS->traces.visible - num_traces_displayable) target = GLOBALS->traces.visible - num_traces_displayable;
 

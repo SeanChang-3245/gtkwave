@@ -122,14 +122,12 @@ static gboolean mouseover_timer(gpointer dummy)
     } else if (GLOBALS->mouseover_counter >= 10) {
         GtkAllocation allocation;
         gtk_widget_get_allocation(GLOBALS->wavearea, &allocation);
-        int num_traces_displayable = allocation.height / (GLOBALS->fontheight);
+        int num_traces_displayable = (allocation.height - WAVE_HEADER_HEIGHT) / (GLOBALS->fontheight);
         int yr = GLOBALS->cached_mouseover_y;
         int i;
         GwTrace *t = NULL;
 
-        num_traces_displayable--; /* for the time trace that is always there */
-
-        yr -= GLOBALS->fontheight;
+        yr -= WAVE_HEADER_HEIGHT;
         if (yr < 0)
             goto bot;
         yr /= GLOBALS->fontheight; /* y now indicates the trace in question */
@@ -260,6 +258,44 @@ GtkWidget *create_signalwindow(void)
     return box;
 }
 
+/*
+ * Recompute the row height. With vertical fill enabled, rows are stretched so the
+ * visible traces fill the wave window height below the time header row. Rows never
+ * shrink below the font-derived height, so a long trace list still scrolls normally.
+ * Returns TRUE if the row height changed.
+ */
+gboolean update_vertical_fill(void)
+{
+    int h = GLOBALS->base_fontheight;
+
+    if (GLOBALS->vertical_fill && GLOBALS->traces.visible > 0 &&
+        GLOBALS->waveheight > WAVE_HEADER_HEIGHT) {
+        int fill = (GLOBALS->waveheight - WAVE_HEADER_HEIGHT) / GLOBALS->traces.visible;
+        if (fill > h) {
+            h = fill;
+        }
+    }
+
+    if (h == GLOBALS->fontheight) {
+        return FALSE;
+    }
+
+    GLOBALS->fontheight = h;
+
+    if (GLOBALS->signalarea) {
+        GwSignalList *signal_list = GW_SIGNAL_LIST(GLOBALS->signalarea);
+        GtkAdjustment *vadj = gw_signal_list_get_vadjustment(signal_list);
+        int top = 0;
+
+        if (vadj && h == GLOBALS->base_fontheight) {
+            top = (int)gtk_adjustment_get_value(vadj);
+        }
+        gw_signal_list_scroll(signal_list, top); /* refresh page size for the new row height */
+    }
+
+    return TRUE;
+}
+
 void redraw_signals_and_waves(void)
 {
     if (!GLOBALS->signalarea || !GLOBALS->wavewindow) {
@@ -267,6 +303,7 @@ void redraw_signals_and_waves(void)
     }
 
     UpdateTracesVisible();
+    update_vertical_fill();
 
     MaxSignalLength();
     gw_signal_list_force_redraw(GW_SIGNAL_LIST(GLOBALS->signalarea));

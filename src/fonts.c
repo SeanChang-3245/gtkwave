@@ -85,7 +85,7 @@ static void pango_load_all_fonts(void)
         }
     }
 
-    GLOBALS->fontheight = my_font_height(GLOBALS->signalfont) + 4;
+    GLOBALS->fontheight = GLOBALS->base_fontheight = my_font_height(GLOBALS->signalfont) + 4;
 
     GLOBALS->wavefont = GLOBALS->wavefont_smaller = do_font_load(GLOBALS->fontname_waves);
     if (!GLOBALS->wavefont) {

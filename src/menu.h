@@ -243,6 +243,7 @@ enum WV_MenuItems
     WV_MENU_FULLSCR,
     WV_MENU_SEP8C,
     WV_MENU_VSG,
+    WV_MENU_VFILL,
     WV_MENU_SEP9,
     WV_MENU_SHW,
     WV_MENU_FILL1,
@@ -372,6 +373,7 @@ void collect_all_named_markers(gpointer null_data, guint callback_action, GtkWid
 void delete_unnamed_marker(gpointer null_data, guint callback_action, GtkWidget *widget);
 void wave_scrolling_on(gpointer null_data, guint callback_action, GtkWidget *widget);
 void menu_show_grid(gpointer null_data, guint callback_action, GtkWidget *widget);
+void menu_vertical_fill(gpointer null_data, guint callback_action, GtkWidget *widget);
 void menu_show_mouseover(gpointer null_data, guint callback_action, GtkWidget *widget);
 void menu_show_base(gpointer null_data, guint callback_action, GtkWidget *widget);
 void menu_enable_dynamic_resize(gpointer null_data, guint callback_action, GtkWidget *widget);

@@ -162,6 +162,13 @@ int f_disable_tooltips(const char *str)
     return (0);
 }
 
+int f_vertical_fill(const char *str)
+{
+    DEBUG(printf("f_vertical_fill(\"%s\")\n", str));
+    GLOBALS->vertical_fill = atoi_64(str) ? 1 : 0;
+    return (0);
+}
+
 int f_do_initial_zoom_fit(const char *str)
 {
     DEBUG(printf("f_do_initial_zoom_fit(\"%s\")\n", str));
@@ -854,6 +861,7 @@ static struct rc_entry rcitems[] = {{"accel", f_accel},
                                     {"vcd_preserve_glitches_real", f_vcd_preserve_glitches_real},
                                     {"vcd_warning_filesize", f_vcd_warning_filesize},
                                     {"vector_padding", f_vector_padding},
+                                    {"vertical_fill", f_vertical_fill},
                                     {"vlist_compression", f_vlist_compression},
                                     {"vlist_prepack", f_vlist_prepack},
                                     {"wave_scrolling", f_wave_scrolling},

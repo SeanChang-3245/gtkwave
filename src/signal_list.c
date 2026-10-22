@@ -126,7 +126,7 @@ int gw_signal_list_get_num_traces_displayable(GwSignalList *signal_list)
     int height = gtk_widget_get_allocated_height(GTK_WIDGET(signal_list));
 
     /* minus one for the time trace that is always there */
-    return height / GLOBALS->fontheight - 1;
+    return (height - WAVE_HEADER_HEIGHT) / GLOBALS->fontheight;
 }
 
 // Render one signal row
@@ -310,7 +310,7 @@ static gboolean draw(GtkWidget *widget, cairo_t *cr)
     }
 
     // Draw surface underneath the header
-    cairo_set_source_surface(cr, signal_list->surface, 0.0, GLOBALS->fontheight);
+    cairo_set_source_surface(cr, signal_list->surface, 0.0, WAVE_HEADER_HEIGHT);
     cairo_paint(cr);
 
     GtkAllocation allocation;
@@ -323,14 +323,14 @@ static gboolean draw(GtkWidget *widget, cairo_t *cr)
                               colors->mdgray.g,
                               colors->mdgray.b,
                               colors->mdgray.a);
-        cairo_rectangle(cr, 0, 0, allocation.width, GLOBALS->fontheight);
+        cairo_rectangle(cr, 0, 0, allocation.width, WAVE_HEADER_HEIGHT);
         cairo_fill(cr);
 
         XXX_font_engine_draw_string(cr,
                                     GLOBALS->signalfont,
                                     &colors->black,
                                     4,
-                                    GLOBALS->fontheight - 4,
+                                    WAVE_HEADER_HEIGHT - 4,
                                     "Time");
     }
 
@@ -348,7 +348,7 @@ static gboolean draw(GtkWidget *widget, cairo_t *cr)
 
     // Draw drop position highlight
     if (signal_list->drop.highlight_position >= 0) {
-        int ylin = ((signal_list->drop.highlight_position + 1) * GLOBALS->fontheight) - 1;
+        int ylin = WAVE_HEADER_HEIGHT + (signal_list->drop.highlight_position * GLOBALS->fontheight) - 1;
 
         cairo_set_source_rgba(cr,
                               colors->black.r,
@@ -399,8 +399,8 @@ static GwTrace *get_trace_for_y(GwSignalList *signal_list, int y)
 
     int num_traces_displayable = gw_signal_list_get_num_traces_displayable(signal_list);
 
-    int which = y;
-    which = which / GLOBALS->fontheight - 1; // Subtract one for the header trace
+    int which = y - WAVE_HEADER_HEIGHT; // Skip the header trace
+    which = (which < 0) ? -1 : which / GLOBALS->fontheight;
 
     if (which >= 0 && which < num_traces_displayable) {
         // Get topmost trace
@@ -830,7 +830,7 @@ static int y_to_drop_position(int y)
 {
     // Shift the position of the drop targets up by one half row height to make
     // it easier to drop items above or below another row.
-    int position = (y - GLOBALS->fontheight / 2) / GLOBALS->fontheight;
+    int position = (y - WAVE_HEADER_HEIGHT + GLOBALS->fontheight / 2) / GLOBALS->fontheight;
 
     // Limit position to the total number of traces.
     // Dropping an item on the empty space after the last appends the item at the end of the list.
@@ -875,7 +875,7 @@ static gboolean drag_motion(GtkWidget *widget, GdkDragContext *context, gint x, 
     signal_list->drop.in_scroll_area_bottom = FALSE;
 
     if (height > 2 * SCROLL_AREA_HEIGHT) {
-        if (y < SCROLL_AREA_HEIGHT + GLOBALS->fontheight) { // include header height
+        if (y < SCROLL_AREA_HEIGHT + WAVE_HEADER_HEIGHT) { // include header height
             signal_list->drop.in_scroll_area_top = TRUE;
         } else if (y >= height - SCROLL_AREA_HEIGHT) {
             signal_list->drop.in_scroll_area_bottom = TRUE;

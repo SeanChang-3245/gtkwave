@@ -644,6 +644,12 @@ struct Global
     char do_zoom_center; /* from zoombuttons.c 720 */
     char do_initial_zoom_fit; /* from zoombuttons.c 721 */
     char do_initial_zoom_fit_used;
+
+    /*
+     * vertical fill
+     */
+    int base_fontheight; /* row height derived from the signal font */
+    char vertical_fill; /* stretch rows to fill the wave window height */
 };
 
 struct Global *initialize_globals(void);
@@ -686,6 +692,9 @@ void set_GLOBALS_x(struct Global *g, const char *file, int line);
 #endif
 
 void logbox_reload(void);
+
+/* the time header row keeps the font-derived height even when trace rows are stretched */
+#define WAVE_HEADER_HEIGHT (GLOBALS->base_fontheight)
 
 extern struct Global *GLOBALS;
 #endif

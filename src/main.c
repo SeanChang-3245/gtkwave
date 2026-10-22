@@ -753,6 +753,7 @@ int main_2(int opt_vcd, int argc, char *argv[])
         GLOBALS->keep_xz_colors = old_g->keep_xz_colors;
         GLOBALS->disable_tooltips = old_g->disable_tooltips;
         GLOBALS->do_initial_zoom_fit = old_g->do_initial_zoom_fit;
+        GLOBALS->vertical_fill = old_g->vertical_fill;
         GLOBALS->do_resize_signals = old_g->do_resize_signals;
         GLOBALS->initial_signal_window_width = old_g->initial_signal_window_width;
         GLOBALS->scale_to_time_dimension = old_g->scale_to_time_dimension;

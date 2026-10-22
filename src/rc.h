@@ -74,6 +74,7 @@ int f_clipboard_mouseover(const char *str);
 int f_disable_mouseover(const char *str);
 int f_disable_tooltips(const char *str);
 int f_do_initial_zoom_fit(const char *str);
+int f_vertical_fill(const char *str);
 int f_dynamic_resizing(const char *str);
 int f_enable_fast_exit(const char *str);
 int f_enable_ghost_marker(const char *str);

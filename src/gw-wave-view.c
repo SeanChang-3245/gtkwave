@@ -5,6 +5,8 @@
 #include "gw-wave-view-traces.h"
 #include "globals.h"
 #include "wavewindow.h"
+#include "signalwindow.h"
+#include "signal_list.h"
 
 G_DEFINE_TYPE(GwWaveView, gw_wave_view, GTK_TYPE_DRAWING_AREA)
 
@@ -118,7 +120,7 @@ static void draw_marker(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors)
                 XXX_gdk_draw_line(cr,
                                   colors->marker_baseline,
                                   xl,
-                                  GLOBALS->fontheight - 1,
+                                  WAVE_HEADER_HEIGHT - 1,
                                   xl,
                                   GLOBALS->waveheight - 1);
             }
@@ -135,7 +137,7 @@ static void draw_marker(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors)
                 XXX_gdk_draw_line(cr,
                                   colors->marker_primary,
                                   xl,
-                                  GLOBALS->fontheight - 1,
+                                  WAVE_HEADER_HEIGHT - 1,
                                   xl,
                                   GLOBALS->waveheight - 1);
                 m1x_wavewindow_c_1 = xl;
@@ -154,7 +156,7 @@ static void draw_marker(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors)
                 XXX_gdk_draw_line(cr,
                                   colors->marker_primary,
                                   xl,
-                                  GLOBALS->fontheight - 1,
+                                  WAVE_HEADER_HEIGHT - 1,
                                   xl,
                                   GLOBALS->waveheight - 1);
                 m2x_wavewindow_c_1 = xl;
@@ -190,7 +192,7 @@ static void renderhash(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors, 
     int s_ctx_iter;
     int timearray_encountered = (GLOBALS->ruler_step != 0);
 
-    fhminus2 = GLOBALS->fontheight - 2;
+    fhminus2 = WAVE_HEADER_HEIGHT - 2;
 
     WAVE_STRACE_ITERATOR(s_ctx_iter)
     {
@@ -287,7 +289,7 @@ static void rendertimes(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors)
         if (GLOBALS->strace_ctx->timearray) {
             int pos, pos2;
             GwTime *t, tm;
-            int y = GLOBALS->fontheight + 2;
+            int y = WAVE_HEADER_HEIGHT + 2;
             int oldx = -1;
 
             timearray_encountered = 1;
@@ -343,7 +345,7 @@ static void rendertimes(GwWaveView *self, cairo_t *cr, GwWaveformColors *colors)
         GwTime low_x = (GLOBALS->tims.start - GLOBALS->ruler_origin) / GLOBALS->ruler_step;
         GwTime high_x = (rhs - GLOBALS->ruler_origin) / GLOBALS->ruler_step;
         GwTime iter_x, tm;
-        int y = GLOBALS->fontheight + 2;
+        int y = WAVE_HEADER_HEIGHT + 2;
         int oldx = -1;
 
         cairo_set_source_rgba(cr, colors->grid.r, colors->grid.g, colors->grid.b, colors->grid.a);
@@ -446,7 +448,7 @@ static void rendertimebar(GwWaveView *self, cairo_t *cr, GwWaveformColors *color
 {
     gint width = gtk_widget_get_allocated_width(GTK_WIDGET(self));
 
-    XXX_gdk_draw_rectangle(cr, colors->timebar_background, TRUE, 0, -1, width, GLOBALS->fontheight);
+    XXX_gdk_draw_rectangle(cr, colors->timebar_background, TRUE, 0, -1, width, WAVE_HEADER_HEIGHT);
     rendertimes(self, cr, colors);
 }
 
@@ -492,9 +494,9 @@ static void renderblackout(GwTime start, GwTime end, gpointer user_data)
                            data->colors->fill_x,
                            TRUE,
                            (((gdouble)lclip) * GLOBALS->pxns),
-                           GLOBALS->fontheight,
+                           WAVE_HEADER_HEIGHT,
                            (((gdouble)(rclip - lclip)) * GLOBALS->pxns),
-                           GLOBALS->waveheight - GLOBALS->fontheight);
+                           GLOBALS->waveheight - WAVE_HEADER_HEIGHT);
 }
 
 typedef struct
@@ -530,7 +532,7 @@ static void draw_named_marker(gpointer data, gpointer user_data)
     static const double DASHES[] = {5.0, 3.0};
     cairo_set_dash(cr, DASHES, G_N_ELEMENTS(DASHES), 0.0);
 
-    XXX_gdk_draw_line(cr, draw_data->color, x, GLOBALS->fontheight - 1, x, GLOBALS->waveheight - 1);
+    XXX_gdk_draw_line(cr, draw_data->color, x, WAVE_HEADER_HEIGHT - 1, x, GLOBALS->waveheight - 1);
     cairo_set_dash(cr, DASHES, 0, 0);
 
     const gchar *name = gw_marker_get_display_name(marker);
@@ -539,7 +541,7 @@ static void draw_named_marker(gpointer data, gpointer user_data)
                                 GLOBALS->wavefont_smaller,
                                 &draw_data->color,
                                 x - text_width / 2,
-                                GLOBALS->fontheight - 2,
+                                WAVE_HEADER_HEIGHT - 2,
                                 name);
 
     // if ((!GLOBALS->marker_names[i]) || (!GLOBALS->marker_names[i][0])) {
@@ -705,6 +707,10 @@ static void gw_wave_view_size_allocate(GtkWidget *widget, GtkAllocation *allocat
 
     GLOBALS->wavewidth = allocation->width;
     GLOBALS->waveheight = allocation->height;
+
+    if (update_vertical_fill() && GLOBALS->signalarea) {
+        gw_signal_list_force_redraw(GW_SIGNAL_LIST(GLOBALS->signalarea));
+    }
 
     g_clear_pointer(&self->traces_surface, cairo_surface_destroy);
 
